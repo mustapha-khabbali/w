@@ -1,12 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { Heart } from 'lucide-react';
 import audioFile from '../assets/audioSpecial.mp3';
 
 export const PaperMessage = ({ message, onComplete }) => {
-    const audio = useMemo(() => new Audio(audioFile), []);
+    const audioRef = useRef(null);
 
     useEffect(() => {
+        // Initialize audio on mount
+        audioRef.current = new Audio(audioFile);
+
         // Trigger confetti after the paper is fully unrolled/settled
         const timer = setTimeout(() => {
             triggerConfetti();
@@ -16,8 +19,10 @@ export const PaperMessage = ({ message, onComplete }) => {
     }, [message, onComplete]);
 
     const playAudio = () => {
-        audio.currentTime = 0;
-        audio.play().catch(e => console.error("Audio playback failed:", e));
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+        }
     };
 
     const triggerConfetti = () => {
