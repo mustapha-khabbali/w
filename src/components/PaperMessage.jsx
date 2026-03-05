@@ -1,32 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { Heart } from 'lucide-react';
-import audioFile from '../assets/audioSpecial.mp3';
 
 export const PaperMessage = ({ message, onComplete }) => {
-    const audioRef = useRef(null);
 
     useEffect(() => {
-        // Initialize audio on mount
-        audioRef.current = new Audio(audioFile);
-
-        // Trigger confetti and audio after the paper is fully unrolled/settled
+        // Trigger confetti after the paper is fully unrolled/settled
         const timer = setTimeout(() => {
-            if (audioRef.current) {
-                audioRef.current.currentTime = 0;
-                audioRef.current.play().catch(e => console.error("Auto-playback prevented by browser:", e));
-            }
             triggerConfetti();
             if (onComplete) onComplete();
         }, 1200);
 
-        return () => {
-            clearTimeout(timer);
-            if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current = null;
-            }
-        };
+        return () => clearTimeout(timer);
     }, [message, onComplete]);
 
     const triggerConfetti = () => {

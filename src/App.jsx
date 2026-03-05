@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { NeonButton } from './components/NeonButton';
 import { MessageInput } from './components/MessageInput';
 import { MessageBox } from './components/MessageBox';
 import { BackgroundSparkles } from './components/BackgroundSparkles';
 import { Gift, PenLine } from 'lucide-react';
+import audioSpecial from './assets/audioSpecial.mp3';
 
 
 
 function App() {
   const [view, setView] = useState('home'); // 'home', 'input', 'box'
   const [message, setMessage] = useState('');
+
+  // Audio reference initialized once
+  const audioRef = useRef(new Audio(audioSpecial));
+
   const [customMessages, setCustomMessages] = useState(() => {
     const saved = localStorage.getItem('neonBoxMessages');
     if (saved) {
@@ -24,6 +29,11 @@ function App() {
   });
 
   const handleSurprise = () => {
+    // Play audio immediately on true click
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.error("Audio block:", e));
+    }
     // If user deleted all default messages and hasn't packed any notes:
     if (customMessages.length === 0) {
       alert("sendo9a khawya , ketbi chi 7aja.");
