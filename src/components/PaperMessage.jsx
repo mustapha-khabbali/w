@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { Heart } from 'lucide-react';
+import audioFile from '../assets/audioSpecial.mp3';
 
 export const PaperMessage = ({ message, onComplete }) => {
+    const audio = useMemo(() => new Audio(audioFile), []);
+
     useEffect(() => {
         // Trigger confetti after the paper is fully unrolled/settled
         const timer = setTimeout(() => {
@@ -11,6 +14,11 @@ export const PaperMessage = ({ message, onComplete }) => {
         }, 1200);
         return () => clearTimeout(timer);
     }, [message, onComplete]);
+
+    const playAudio = () => {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.error("Audio playback failed:", e));
+    };
 
     const triggerConfetti = () => {
         const duration = 3000;
@@ -42,19 +50,23 @@ export const PaperMessage = ({ message, onComplete }) => {
     };
 
     return (
-        <div style={{
-            background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #f3e5f5 100%)',
-            width: '400px', // Increased from 320px (~25% increase for better standard feel)
-            minHeight: '280px', // Increased from 220px
-            padding: '60px 40px 50px',
-            boxShadow: '0 30px 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 20, 147, 0.5)',
-            border: '4px solid rgba(255, 255, 255, 0.9)',
-            borderRadius: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative'
-        }}>
+        <div
+            onClick={playAudio}
+            style={{
+                background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #f3e5f5 100%)',
+                width: '400px', // Increased from 320px (~25% increase for better standard feel)
+                minHeight: '280px', // Increased from 220px
+                padding: '60px 40px 50px',
+                boxShadow: '0 30px 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 20, 147, 0.5)',
+                border: '4px solid rgba(255, 255, 255, 0.9)',
+                borderRadius: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                cursor: 'pointer'
+            }}
+        >
             {/* Cute top pinned decoration (like a heart seal) */}
             <div style={{
                 position: 'absolute',
