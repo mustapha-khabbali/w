@@ -10,20 +10,24 @@ export const PaperMessage = ({ message, onComplete }) => {
         // Initialize audio on mount
         audioRef.current = new Audio(audioFile);
 
-        // Trigger confetti after the paper is fully unrolled/settled
+        // Trigger confetti and audio after the paper is fully unrolled/settled
         const timer = setTimeout(() => {
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+                audioRef.current.play().catch(e => console.error("Auto-playback prevented by browser:", e));
+            }
             triggerConfetti();
             if (onComplete) onComplete();
         }, 1200);
-        return () => clearTimeout(timer);
-    }, [message, onComplete]);
 
-    const playAudio = () => {
-        if (audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
-        }
-    };
+        return () => {
+            clearTimeout(timer);
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, [message, onComplete]);
 
     const triggerConfetti = () => {
         const duration = 3000;
@@ -56,7 +60,6 @@ export const PaperMessage = ({ message, onComplete }) => {
 
     return (
         <div
-            onClick={playAudio}
             style={{
                 background: 'linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #f3e5f5 100%)',
                 width: '400px', // Increased from 320px (~25% increase for better standard feel)
@@ -68,8 +71,7 @@ export const PaperMessage = ({ message, onComplete }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'relative',
-                cursor: 'pointer'
+                position: 'relative'
             }}
         >
             {/* Cute top pinned decoration (like a heart seal) */}
